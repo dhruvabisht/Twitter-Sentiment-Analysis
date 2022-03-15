@@ -50,3 +50,40 @@ def Twitter():
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(sample_data)
     print("\n\nTHE SAMPLE DATA PROCESSED : \n")
+    print(vectorizer.get_feature_names())
+    print(X.toarray())
+    print("\nPLEASE WAIT A FEW SECONDS\nGETTING THE TWEETS FROM TWITTER SERVER.........")
+    
+    #Importing the Configurations
+    twitterApiKey='YOUR_TWITTER_API_KEY'
+    twitterApiSecret='YOUR_TWITTER_API_SECRET'
+    twitterApiAccessToken='YOUR_TWITTER_API_ACESS_TOKEN'
+    twitterApiAccessTokenSecret='YOUR_TWITTER_API_ACESS_TOKEN_SECRET'
+
+    #Authenticating My Keys and Tokens
+    auth=tweepy.OAuthHandler(twitterApiKey,twitterApiSecret)
+    auth.set_access_token(twitterApiAccessToken,twitterApiAccessTokenSecret)
+    twitterApi = tweepy.API(auth,wait_on_rate_limit=True)    
+    tweets = tweepy.Cursor(twitterApi.user_timeline, screen_name = twitterAccount.get(),count=None,since_id=None,max_id=None,trim_user=True,exclude_replies=True,contributor_details=False, include_entities=False).items(1000);
+
+    #Creating a Datframe using the Tweets 
+    df = pd.DataFrame(data=[tweet.text for tweet in tweets],columns=['Tweet'])
+    print("\n\nPRINTING THE COLLECTION OF TWEETS : \n")
+    print(df.head())
+    
+    #Function to convert the Entire Collection of Tweets into a single String
+    def message_cleaning(message):
+        Test_punc_removed = [char for char in message if char not in string.punctuation]
+        Test_punc_removed_join = ''.join(Test_punc_removed)
+        Test_punc_removed_join_clean = [word for word in Test_punc_removed_join.split() if word.lower() not in stopwords.words('english')]
+        return Test_punc_removed_join_clean
+
+    #Function to Remove Mentions, Retweets , Urls and Hastags 
+    def Clean(text):    
+            text = re.compile('\#').sub('', re.compile('RT @').sub('@', str(text), count=1).strip())
+            text = ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)"," ",str(text)).split())
+            return text
+    df['Tweet']=df['Tweet'].apply(Clean)
+    df = df.drop(df[df['Tweet']==''].index)
+    twitter_df_clean = df['Tweet'].apply(message_cleaning)
+    twitter_df_clean
