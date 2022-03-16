@@ -87,3 +87,119 @@ def Twitter():
     df = df.drop(df[df['Tweet']==''].index)
     twitter_df_clean = df['Tweet'].apply(message_cleaning)
     twitter_df_clean
+
+    #Getting Vector Values of tweets
+    from sklearn.feature_extraction.text import CountVectorizer
+    vectorizer = CountVectorizer(analyzer = message_cleaning, dtype = np.uint8)
+    twitter_countvectorizer = vectorizer.fit_transform(df['Tweet'])
+    print("\n\nTHE TWEETS IN FORM OF STRING TOKENS AND THE VECTOR ARRAY : \n")
+    print(vectorizer.get_feature_names())
+    print(twitter_countvectorizer.toarray())
+    print("\n\nPRINTING THE COLLECTION OF TWEETS AFTER CLEANING : \n")
+    print(df.head(10))
+
+    #Function to get Ploarity of Tweets
+    def getTextPolarity(txt):
+        return TextBlob(txt).sentiment.polarity
+
+    #Fuction to get the Subjectivity of Tweets
+    def getTextSubjectivity(txt):
+        return TextBlob(txt).sentiment.subjectivity
+
+    #Applying the above functions to my Data Frame
+    df['Subjectivity']=df['Tweet'].apply(getTextSubjectivity)
+    df['Polarity']=df['Tweet'].apply(getTextPolarity)
+
+    print("\n\nPRINTING THE DATA FRAME WITH SUBJECTIVITY AND POLARITY VALUES : \n")
+    print(df.head(10))
+    
+    print("\n\nPRINTING THE DATA FRAME AFTER REMOVING THE NULL TWEETS : \n")
+    df = df.drop(df[df['Tweet']==''].index)
+    print(df.head(10))
+
+    #Function to return the Score Values
+    def getTextAnalysis(pol):
+        if pol<0:
+            return 0
+        elif pol>0:
+            return 1
+
+    #Function to Assign labels to the tweets
+    def assignLabels(pol):
+        if pol<0:
+            return 'Negative'
+        elif pol==0:
+            return 'Neutral'
+        else:
+            return 'Positive'
+
+    #Function to prepair data for training
+    def train(pol):
+        if pol<0:
+            return 'Negative'
+        elif pol != 0:
+            return 'Positive'
+        
+    df["Score"]=df['Polarity'].apply(getTextAnalysis)
+    df["Label"]=df['Polarity'].apply(assignLabels)
+    df["Train"]=df['Polarity'].apply(train)
+    print("\n\nPRINTING THE FINAL PROCESSED COLLECTION OF TWEETS : \n")
+    print(df.head(10))
+    print("\n\nTHE VECTOR TABLE : \n")
+    twitter_countvectorizer.shape
+    
+    print("\n\nSHOWING THE PERCENTAGE OF POSITIVE, NEAGTIVE AND NEUTRAL TWEETS OF THE ENTERED TWITTER HANDLE : \n")
+    #Calculating Percentage of Positive Tweets
+    positive= df[df['Polarity']>0]
+    print(str(positive.shape[0]/(df.shape[0])*100)+"% of tweets are Positive.")
+    pos=positive.shape[0]/df.shape[0]*100
+
+    #Calculating Percentage of Neagtive Tweets
+    negative= df[df['Polarity']<0]
+    print(str(negative.shape[0]/(df.shape[0])*100)+"% of tweets are Negative.")
+    neg=negative.shape[0]/df.shape[0]*100
+
+    #Calculating Percentage of Neutral Tweets
+    neutral= df[df['Polarity']==0]
+    print(str(neutral.shape[0]/(df.shape[0])*100)+"% of tweets are Neutral.")
+    neutrall=neutral.shape[0]/df.shape[0]*100
+
+    #Plotting a Pie Chart to show Positive, Negative and Neutral Tweet Percentage
+    explode=(0,0.1,0)
+    labels='Positive','Negative','Neutral'
+    sizes=[pos,neg,neutrall]
+    colors=['yellowgreen','lightcoral','gold']
+    plt.pie(sizes,explode,colors=colors,autopct='%1.1f%%',startangle=90)
+    plt.legend(labels,loc=(-0.05,0.05),shadow=True)
+    plt.axis('equal')
+    plt.title("Pie Chart For Tweet Percentages")
+    plt.show()
+
+    #Plotting a Bar graph to show the Positive, Negative and Neutral Tweet Percentage
+    labels = 'Positive','Negative','Neutral'
+    plt.title("Bar Graph For Tweet Percentages")
+    plt.ylabel("Number Of Tweets")
+    plt.bar(labels, sizes, color=colors)
+    plt.show()
+    
+    #Plotting a Scatter graph between Subjectivity and Polarity
+    for index, row in df.iterrows():
+        if row['Polarity']>0:
+            plt.scatter(row['Polarity'],row['Subjectivity'],color='green')
+        elif row['Polarity']<0:
+            plt.scatter(row['Polarity'],row['Subjectivity'],color='red')
+        elif row['Polarity']==0:
+            plt.scatter(row['Polarity'],row['Subjectivity'],color='blue')
+    plt.title('Twitter Sentimental Analysis')
+    plt.xlabel('Ploarity')
+    plt.ylabel('Subjectivity')
+    plt.show()    
+    df2 = df.drop(df[df['Label']=='Neutral'].index)
+    twitter_countvectorizer = vectorizer.fit_transform(df2['Tweet'])
+    twitter = pd.DataFrame(twitter_countvectorizer.toarray())
+    X = twitter
+    print(X)
+    y = df2['Score']
+    print(X.shape)
+    print(y.shape)
+    
