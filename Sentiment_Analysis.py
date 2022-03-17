@@ -202,4 +202,66 @@ def Twitter():
     y = df2['Score']
     print(X.shape)
     print(y.shape)
+    #Training my model
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+    #Applying the Naive Bayes Classifier
+    from sklearn.naive_bayes import MultinomialNB
+    NB_classifier = MultinomialNB()
+    NB_classifier.fit(X_train, y_train)
     
+    #Predicting the Test set results
+    import seaborn as sns
+    from sklearn.metrics import classification_report, confusion_matrix
+    y_predict_test = NB_classifier.predict(X_test)
+    cm = confusion_matrix(y_test, y_predict_test)
+    
+    print("\n\n\n PRINTING THE CLASSIFICATION REPORT USING NAIVE BAYES : \n\n\n")
+    print(classification_report(y_test, y_predict_test))
+    sns.heatmap(cm, annot=True)
+    plt.xlabel('TRUE VALUES')
+    plt.ylabel('PREDICTED VALUES')
+    plt.title('Heat Map of Naive Bayes ')
+    plt.show()
+    
+    #Using SVM Classifier on my Data Frame
+    df3 = df.drop(df[df['Label']=='Neutral'].index)
+    trainData=df3.sample(frac=0.8,random_state=200) #random state is a seed value
+    testData=df3.drop(trainData.index)    
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
+    # Create feature vectors
+    vectorizer = TfidfVectorizer(norm = False, smooth_idf = False)
+    train_vectors = vectorizer.fit_transform(trainData['Tweet'])
+    test_vectors = vectorizer.transform(testData['Tweet'])
+    import time
+    from sklearn import svm
+    from sklearn.metrics import classification_report
+
+    # Perform classification with SVM, kernel=linear
+    classifier_linear = svm.SVC(kernel='linear')
+    t0 = time.time()
+    classifier_linear.fit(train_vectors, trainData['Train'])
+    t1 = time.time()
+    prediction_linear = classifier_linear.predict(test_vectors)
+    t2 = time.time()
+    time_linear_train = t1-t0
+    time_linear_predict = t2-t1
+
+    #Printing results of SVM
+    print("\n\nPRINTING CLASSIFICATION REPORT USING SVM: \n")
+    print("Training time: %fs; Prediction time: %fs" % (time_linear_train, time_linear_predict))
+    report = classification_report(testData['Train'], prediction_linear, output_dict=True)
+    print('Positive: ', report['Positive'])
+    print('Negative: ', report['Negative'])
+    print(classification_report(testData['Train'], prediction_linear))
+    cm2 = confusion_matrix(testData['Train'], prediction_linear)
+    #f1score= 2*((precision * recall)/( precision + recall))
+    sns.heatmap(cm2, annot=True)
+    plt.xlabel('TRUE VALUES')
+    plt.ylabel('PREDICTED VALUES')
+    plt.title('Heat Map of SupportVector Machine (SVM) ')
+    plt.show()
+    
+
