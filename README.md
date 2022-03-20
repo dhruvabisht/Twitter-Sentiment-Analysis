@@ -15,9 +15,9 @@ Once set up and installed this can help you perfrom real time anaylsis over any 
 
 ## Tech
 
-[Python 3]
-[VsCode]
-[A twitter account]
+- [Python 3](https://www.python.org/)
+- [VsCode](https://code.visualstudio.com/)
+- [A twitter account](https://twitter.com/)
  
 And that's all you need for this project 😃
 
