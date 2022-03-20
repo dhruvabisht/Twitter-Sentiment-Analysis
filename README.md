@@ -71,8 +71,10 @@ Then we have made a few graphs and charts to represent the percentage of positiv
 
 
 ## Contributors
-- Dhruva bisht <https://github.com/dhruvabisht> <DHruvabisht_19021048.cse@geu.ac.in>
+- Dhruva bisht <Dhruvabisht_19021048.cse@geu.ac.in>
 
 ## License & copyright
-- © Dhruva Bisht 
-- year 2022
+© Dhruva Bisht 2022
+Licensed under the [GNU General Public License](LICENSE).
+
+Happy Analysis ✌
