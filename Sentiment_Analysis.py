@@ -16,7 +16,7 @@ def Twitter():
     print("\t\t\t\tTHIS IS THE SOCIAL MEDIA SENTIMENTAL ANALYSIS RESULT SCREEN")
     import warnings
     warnings.filterwarnings("ignore")
-    #Now I have taken two Strings as Sample and removed the punctuations from them
+    #Now we have taken two Strings as Sample and removed the punctuations from them
     #Converted them in string as tokens in an array to shocase how my program actually works
     import string
     print("\nPRINTING THE ENGLISH LANGUAGE PUNCTUATIONS : "+string.punctuation)
@@ -263,5 +263,26 @@ def Twitter():
     plt.ylabel('PREDICTED VALUES')
     plt.title('Heat Map of SupportVector Machine (SVM) ')
     plt.show()
-    
+
+#Creating the Window of the GUI
+root.geometry("633x333")
+root.maxsize(1200, 800)
+root.minsize(400, 200)
+
+#Personalizing the GUI
+root.title("Social Media Sentimental Analysis by Dhruva Bisht")#adding a title to my title window of the gui
+title_On_Screen = Label(text = "ENTER THE TWITTER HANDEL BELOW", fg = "blue" , font = ("bold", 22), borderwidth = 10, relief = GROOVE)
+title_On_Screen.pack(fill = X)
+
+#Getting the data from the user by taking an Input
+twitterAccount_Entry = StringVar()
+twitterAccount = Entry(root, textvariable = twitterAccount_Entry, borderwidth = 7, relief = GROOVE)
+twitterAccount.pack()
+
+#Now Creating the buttons to make the GUI interrative and attractive
+button = Button(root, fg = "Black",  text = "SEARCH", font = ("Bold", 18), borderwidth = 7, relief = GROOVE,command = Twitter)
+button.pack()#In the  button we have created a command to input the twitter handel
+
+root.mainloop()
+
 
